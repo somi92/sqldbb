@@ -12,6 +12,7 @@ import com.github.somi92.sqldbb.query.Query;
 import com.github.somi92.sqldbb.query.builder.IQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
+import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
 
 /**
  *
@@ -45,12 +46,19 @@ public class Main {
         System.out.println("===================================================="
                 + "===================================\n");
         
-        IQueryBuilder iqb = new SelectQueryBuilder(true);
-        QueryBuilder qb = new QueryBuilder(iqb);
+        QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
         qb.buildQuery(dbe1);
         Query query = qb.getQuery();
         System.out.println(query);
+        System.out.println("");
         
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        qb = new QueryBuilder(new UpdateQueryBuilder());
+        qb.buildQuery(dbe1);
+        query = qb.getQuery();
+        System.out.println(query);
         System.out.println("");
     }
 }
