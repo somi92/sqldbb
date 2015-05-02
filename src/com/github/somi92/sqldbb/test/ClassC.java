@@ -6,7 +6,6 @@
 package com.github.somi92.sqldbb.test;
 
 import com.github.somi92.sqldbb.annotations.Column;
-import com.github.somi92.sqldbb.annotations.ForeignKey;
 import com.github.somi92.sqldbb.annotations.PrimaryKey;
 import com.github.somi92.sqldbb.annotations.Table;
 
@@ -15,18 +14,11 @@ import com.github.somi92.sqldbb.annotations.Table;
  * @author milos
  */
 
-@Table("TableA")
-public class ClassA {
+@Table("TableC")
+public class ClassC {
     
-    @PrimaryKey("a1T")
-    private int a1;
-    @PrimaryKey("a11T")
-    private int a11;
-    @Column("a2T")
-    private String a2;
-    @ForeignKey(name = "bT", referencingTable = "TableB", referencingColumn = "b1T")
-    private ClassB b;
-    
-    public ClassA() {
-    }
+    @PrimaryKey("c1T")
+    private int c1;
+    @Column("c2T")
+    private int c2;
 }

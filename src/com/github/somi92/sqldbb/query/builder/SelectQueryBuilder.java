@@ -39,15 +39,18 @@ public class SelectQueryBuilder implements IQueryBuilder {
     @Override
     public void formatQuery(DatabaseEntity dbe) {
         String table = dbe.getTableName();
-        List<String> columns = dbe.getAllColumns();
-        String columnsForQuery = "";
-        for(int i=0; i<columns.size(); i++) {
-            if(i==(columns.size()-1)) {
-                columnsForQuery += table+"."+columns.get(i);
-            } else {
-                columnsForQuery += table+"."+columns.get(i)+", ";
-            }
-        }
+//        List<String> columns = dbe.getAllColumns();
+//        String columnsForQuery = "";
+//        for(int i=0; i<columns.size(); i++) {
+//            if(i==(columns.size()-1)) {
+//                columnsForQuery += table+"."+columns.get(i);
+//            } else {
+//                columnsForQuery += table+"."+columns.get(i)+", ";
+//            }
+//        }
+        
+        String columnsForQuery = getColumnsForQuery(dbe);
+        
         List<String> primaryKeys = dbe.getPrimaryKeys();
         String condition = "";
         for(int i=0; i<primaryKeys.size(); i++) {
@@ -61,7 +64,7 @@ public class SelectQueryBuilder implements IQueryBuilder {
                 query.getKeywords()[0],
                 columnsForQuery,
                 query.getKeywords()[1],
-                table,
+                table+getSourceForQuery(dbe),
                 query.getKeywords()[2],
                 condition);
         query.setQuery(queryValue);
@@ -70,5 +73,45 @@ public class SelectQueryBuilder implements IQueryBuilder {
     @Override
     public Query getQuery() {
         return query;
+    }
+    
+    private String getColumnsForQuery(DatabaseEntity dbe) {
+        String table = dbe.getTableName();
+        List<String> columns = dbe.getAllColumns();
+        List<String> foreingKeys = dbe.getForeignKeys();
+        String columnsForQuery = "";
+        for(int i=0; i<columns.size(); i++) {
+            if(foreingKeys.contains(columns.get(i))) {
+                continue;
+            }
+            if(i==(columns.size()-1)) {
+                columnsForQuery += table+"."+columns.get(i);
+            } else {
+                columnsForQuery += table+"."+columns.get(i)+", ";
+            }
+        }
+        if(columnsForQuery.endsWith(",")) {
+            columnsForQuery = columnsForQuery.substring(0, columnsForQuery.length()-1);
+        }
+        for(String s : foreingKeys) {
+            DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(s);
+            DatabaseEntity foreignDbe = fke.getDbe();
+            columnsForQuery += getColumnsForQuery(foreignDbe);
+        }
+        return columnsForQuery;
+    }
+    
+    private String getSourceForQuery(DatabaseEntity dbe) {
+        String dataSource = "";
+        List<String> foreignKeys = dbe.getForeignKeys();
+        for(String s : foreignKeys) {
+            DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(s);
+            String referencingTable = fke.getReferencingTable();
+            String referencingColumn = fke.getReferencingColumn();
+            String join = " JOIN "+referencingTable+" ON ("+
+                    dbe.getTableName()+"."+s+"="+referencingTable+"."+referencingColumn+")";
+            dataSource += join + getSourceForQuery(fke.getDbe());
+        }
+        return dataSource;
     }
 }

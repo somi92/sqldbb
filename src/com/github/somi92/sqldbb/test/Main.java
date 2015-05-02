@@ -21,24 +21,33 @@ public class Main {
     
     public static void main(String[] args) {
         
-////        DBBroker broker = new DBBroker();
+//        DBBroker broker = new DB?Broker();
         ClassA a = new ClassA();
-//        ClassB b = new ClassB();
-////        broker.saveOrUpdateEntity(a);
-//        
+        ClassB b = new ClassB();
+        ClassC c = new ClassC();
+//        broker.saveOrUpdateEntity(a);
+        
         DatabaseEntity dbe1 = EntityProcessor.createEntity(a.getClass());
-//        EntityProcessor.printEntity(dbe1);
-//        
-//        System.out.println("===================================================");
-//        
-//        DatabaseEntity dbe2 = EntityProcessor.createEntity(b.getClass());
-//        EntityProcessor.printEntity(dbe2);
+        EntityProcessor.printEntity(dbe1);
+        
+        System.out.println("===================================================");
+        
+        DatabaseEntity dbe2 = EntityProcessor.createEntity(b.getClass());
+        EntityProcessor.printEntity(dbe2);
+        
+        System.out.println("===================================================");
+        
+        DatabaseEntity dbe3 = EntityProcessor.createEntity(c.getClass());
+        EntityProcessor.printEntity(dbe3);
+        
+        System.out.println("===================================================");
         
         IQueryBuilder iqb = new SelectQueryBuilder();
         QueryBuilder qb = new QueryBuilder(iqb);
-        qb.buildQuery(dbe1);
+        qb.buildQuery(dbe2);
         Query query = qb.getQuery();
         System.out.println(query);
         
+        System.out.println("");
     }
 }

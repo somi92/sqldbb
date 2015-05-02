@@ -6,6 +6,7 @@
 package com.github.somi92.sqldbb.test;
 
 import com.github.somi92.sqldbb.annotations.Column;
+import com.github.somi92.sqldbb.annotations.ForeignKey;
 import com.github.somi92.sqldbb.annotations.PrimaryKey;
 import com.github.somi92.sqldbb.annotations.Table;
 
@@ -21,4 +22,6 @@ public class ClassB {
     private int b1;
     @Column("b2T")
     private String b2;
+    @ForeignKey(name = "cT", referencingTable = "TableC", referencingColumn = "c1T")
+    private ClassC c;
 }
