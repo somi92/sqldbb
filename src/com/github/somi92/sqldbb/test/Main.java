@@ -30,21 +30,24 @@ public class Main {
         DatabaseEntity dbe1 = EntityProcessor.createEntity(a.getClass());
         EntityProcessor.printEntity(dbe1);
         
-        System.out.println("===================================================");
+        System.out.println("===================================================="
+                + "===================================\n");
         
         DatabaseEntity dbe2 = EntityProcessor.createEntity(b.getClass());
         EntityProcessor.printEntity(dbe2);
         
-        System.out.println("===================================================");
+        System.out.println("===================================================="
+                + "===================================\n");
         
         DatabaseEntity dbe3 = EntityProcessor.createEntity(c.getClass());
         EntityProcessor.printEntity(dbe3);
         
-        System.out.println("===================================================");
+        System.out.println("===================================================="
+                + "===================================\n");
         
-        IQueryBuilder iqb = new SelectQueryBuilder();
+        IQueryBuilder iqb = new SelectQueryBuilder(true);
         QueryBuilder qb = new QueryBuilder(iqb);
-        qb.buildQuery(dbe2);
+        qb.buildQuery(dbe1);
         Query query = qb.getQuery();
         System.out.println(query);
         

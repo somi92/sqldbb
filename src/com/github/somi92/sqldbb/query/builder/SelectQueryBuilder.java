@@ -16,9 +16,11 @@ import java.util.List;
 public class SelectQueryBuilder implements IQueryBuilder {
     
     private Query query;
+    private boolean usePKCondition;
     
-    public SelectQueryBuilder() {
+    public SelectQueryBuilder(boolean usePKCondition) {
         query = new Query();
+        this.usePKCondition = usePKCondition;
     }
 
     @Override
@@ -26,7 +28,11 @@ public class SelectQueryBuilder implements IQueryBuilder {
         String[] keywords = new String[3];
         keywords[0] = "SELECT";
         keywords[1] = "FROM";
-        keywords[2] = "WHERE";
+        if(usePKCondition) {
+            keywords[2] = "WHERE";
+        } else {
+            keywords[2] = "";
+        }
         query.setKeywords(keywords);
     }
 
@@ -53,13 +59,16 @@ public class SelectQueryBuilder implements IQueryBuilder {
         
         List<String> primaryKeys = dbe.getPrimaryKeys();
         String condition = "";
-        for(int i=0; i<primaryKeys.size(); i++) {
+        if(usePKCondition) {
+            for(int i=0; i<primaryKeys.size(); i++) {
             if(i==(primaryKeys.size()-1)) {
                 condition += table+"."+primaryKeys.get(i)+"=?";
             } else {
                 condition += table+"."+primaryKeys.get(i)+"=? AND ";
+                }
             }
         }
+        
         String queryValue = String.format(query.getFormat(),
                 query.getKeywords()[0],
                 columnsForQuery,
