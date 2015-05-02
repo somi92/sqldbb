@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.github.somi92.sqldbb.query;
+package com.github.somi92.sqldbb.query.builder;
 
 /**
  *
  * @author milos
  */
-public interface IQuery {
+public class InsertQueryBuilder {
     
-    public String generateQuery(Class c);
 }
