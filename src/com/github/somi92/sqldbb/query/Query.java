@@ -12,7 +12,7 @@ package com.github.somi92.sqldbb.query;
 public class Query {
     
     private String[] keywords;
-    private String condition;
+//    private String condition;
     private String format;
     private String query;
     
@@ -22,7 +22,7 @@ public class Query {
     
     public Query(String[] keywords, String condition, String format) {
         this.keywords = keywords;
-        this.condition = condition;
+//        this.condition = condition;
         this.format = format;
         this.query = "";
     }
@@ -35,13 +35,13 @@ public class Query {
         this.keywords = keywords;
     }
 
-    public String getCondition() {
-        return condition;
-    }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
+//    public String getCondition() {
+//        return condition;
+//    }
+//
+//    public void setCondition(String condition) {
+//        this.condition = condition;
+//    }
 
     public String getFormat() {
         return format;

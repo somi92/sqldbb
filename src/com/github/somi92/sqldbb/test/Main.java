@@ -9,7 +9,7 @@ import com.github.somi92.sqldbb.broker.DBBroker;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
-import com.github.somi92.sqldbb.query.builder.IQueryBuilder;
+import com.github.somi92.sqldbb.query.builder.DeleteQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
@@ -66,6 +66,15 @@ public class Main {
                 + "===================================\n");
         
         qb = new QueryBuilder(new InsertQueryBuilder());
+        qb.buildQuery(dbe1);
+        query = qb.getQuery();
+        System.out.println(query);
+        System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        qb = new QueryBuilder(new DeleteQueryBuilder(false));
         qb.buildQuery(dbe1);
         query = qb.getQuery();
         System.out.println(query);
