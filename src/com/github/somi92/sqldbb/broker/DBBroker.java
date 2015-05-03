@@ -10,11 +10,16 @@ import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -88,7 +93,7 @@ public class DBBroker {
         
     }
     
-    public void loadEntity(Object o) throws SQLException {
+    public <T> T loadEntity(T o) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
         EntityProcessor.setEntityFieldValues(dbe, o);
         QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
@@ -97,7 +102,78 @@ public class DBBroker {
         PreparedStatement ps = connection.prepareStatement(query.toString());
         qb.prepareStatement(ps, dbe);
         ResultSet rs = ps.executeQuery();
-        
+        T entity = null;
+        while(rs.next()) {
+            entity = createTypeInstance(o, dbe, rs);
+        }
+        return entity;
     }
 
+    private <T> T createTypeInstance(T o, DatabaseEntity dbe, ResultSet rs) throws SQLException {
+        try {
+            T t = (T) o.getClass().newInstance();
+            List<String> fields = dbe.getAllFields();
+            for(String field : fields) {
+                Class fieldType = dbe.getFieldTypes().get(field);
+                String column = dbe.getTableName()+"."+dbe.getFieldColumnMapping().get(field);
+                Class entityClass = dbe.getEntityClass();
+                String first = field.charAt(0)+"";
+                String methodName = "set"+first.toUpperCase()+field.substring(1);
+                Method method = entityClass.getDeclaredMethod(methodName, new Class[] {fieldType});
+                
+                if(dbe.getForeignKeys().contains(dbe.getFieldColumnMapping().get(field))) {
+                    DatabaseEntity dbe2 = dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).getDbe();
+                    method.invoke(t, new Object[] {createTypeInstance(fieldType.newInstance(), dbe2, rs)});
+                    continue;
+                }
+                
+                switch(fieldType.getSimpleName()) {
+                    case "int":
+                        method.invoke(t, new Object[] {rs.getInt(column)});
+                        break;
+                    case "String":
+                        method.invoke(t, new Object[] {rs.getString(column)});
+                        break;
+                    case "long":
+                        method.invoke(t, new Object[] {rs.getLong(column)});
+                        break;
+                    case "float":
+                        method.invoke(t, new Object[] {rs.getFloat(column)});
+                        break;
+                    case "double":
+                        method.invoke(t, new Object[] {rs.getDouble(column)});
+                        break;
+                    case "boolean":
+                        method.invoke(t, new Object[] {rs.getBoolean(column)});
+                        break;
+                    case "Date":
+                        method.invoke(t, new Object[] {rs.getDate(column)});
+                        break;
+                    default:
+                        method.invoke(t, new Object[] {rs.getInt(column)});
+                    }
+                }
+            
+            return t;
+        } catch (InstantiationException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        } catch (NoSuchMethodException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        } catch (SecurityException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        } catch (InvocationTargetException ex) {
+            System.out.println(ex.getClass().getSimpleName()+": "+ex.getMessage());
+            ex.printStackTrace();
+        }
+        return null;
+    }
 }

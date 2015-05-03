@@ -86,22 +86,22 @@ public class SelectQueryBuilder implements IQueryBuilder {
                 Object fieldValue = dbe.getFieldValues().get(field);
                 Class fieldType = dbe.getFieldTypes().get(field);
                 switch(fieldType.getSimpleName()) {
-                    case "Integer":
+                    case "int":
                         ps.setInt(i+1, (int) fieldValue);
                         break;
                     case "String":
                         ps.setString(i+1, (String) fieldValue);
                         break;
-                    case "Long":
+                    case "long":
                         ps.setLong(i+1, (long) fieldValue);
                         break;
-                    case "Float":
+                    case "float":
                         ps.setFloat(i+1, (float) fieldValue);
                         break;
-                    case "Double":
+                    case "double":
                         ps.setDouble(i+1, (double) fieldValue);
                         break;
-                    case "Boolean":
+                    case "boolean":
                         ps.setBoolean(i+1, (boolean) fieldValue);
                         break;
                     case "Date":

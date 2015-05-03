@@ -126,6 +126,16 @@ public class DatabaseEntity {
         this.columnFieldMapping = columnFieldMapping;
     }
     
+    public HashMap<String,String> getFieldColumnMapping() {
+        HashMap<String,String> fieldColumnMapping = new HashMap<>();
+        for(String s : columnFieldMapping.keySet()) {
+            String key = s;
+            String value = columnFieldMapping.get(key);
+            fieldColumnMapping.put(value, key);
+        }
+        return fieldColumnMapping;
+    }
+    
     public HashMap<String,Class> getFieldTypes() {
         return fieldTypes;
     }

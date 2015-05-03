@@ -14,6 +14,7 @@ import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
@@ -22,8 +23,8 @@ import java.util.HashMap;
  */
 public class Main {
     
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) throws SQLException {
+        /*
 //        DBBroker broker = new DB?Broker();
         ClassC c = new ClassC(31, 3);
         ClassB b = new ClassB(21, "b1", c);
@@ -93,5 +94,23 @@ public class Main {
         } else {
             System.out.println("Type error!");
         }
+                */
+        DBBroker broker = new DBBroker();
+        broker.openDatabaseConnection();
+        
+        ClassC c = new ClassC();
+        c.setC1(32);
+        
+        ClassB b = new ClassB();
+        b.setB1(21);
+        
+        ClassA a = new ClassA();
+        a.setA1(12);
+        a.setA11(112);
+        
+        ClassA loaded = broker.loadEntity(a);
+        
+        broker.closeDatabaseConnection();
+        System.out.println(loaded);
     }
 }

@@ -8,6 +8,7 @@ package com.github.somi92.sqldbb.query.builder;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  *
@@ -31,7 +32,7 @@ public class QueryBuilder {
         return builder.getQuery();
     }
     
-    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) {
+    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
         builder.prepareStatement(ps, dbe);
     }
 }
