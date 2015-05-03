@@ -5,9 +5,15 @@
  */
 package com.github.somi92.sqldbb.broker;
 
-import com.github.somi92.sqldbb.annotations.Table;
+import com.github.somi92.sqldbb.entity.DatabaseEntity;
+import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
+import com.github.somi92.sqldbb.query.Query;
+import com.github.somi92.sqldbb.query.builder.QueryBuilder;
+import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -18,11 +24,11 @@ public class DBBroker {
     
     private Connection connection;
     
-    private String databaseDriver = "";
-    private String hostPort = "";
-    private String database = "";
-    private String username = "";
-    private String password = "";
+    private String databaseDriver = "com.mysql.jdbc.Driver";
+    private String hostPort = "localhost:3306";
+    private String database = "sqldbb-test";
+    private String username = "seecsk";
+    private String password = "seecsk@2015";
     
     private void loadDBDriver() throws ClassNotFoundException {
         Class.forName(databaseDriver);
@@ -67,19 +73,30 @@ public class DBBroker {
         }
     }
     
-    /* CRUD operations */
-    
-    public void saveOrUpdateEntity(Object o) {
-        Class c = o.getClass();
-        if(c.isAnnotationPresent(Table.class)) {
-            Table t = (Table) c.getAnnotation(Table.class);
-            System.out.println(t.value());
-        } else {
-            // error: the object is not annotated as a database entity
-        }
+    /* Utility methods */
+    private ResultSet executePreparedStatementQuery(DatabaseEntity dbe, Query query) throws SQLException {
+//        PreparedStatement ps = connection.prepareStatement(query.toString());
+//        if(query.toString().contains("?")) {
+//            
+//        }
+        return null;
     }
     
-    public void loadEntity(Object o) {
+    /* CRUD operations */
+      
+    public void saveOrUpdateEntity(Object o) {
         
     }
+    
+    public void loadEntity(Object o) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
+        qb.buildQuery(dbe);
+        Query query = qb.getQuery();
+        PreparedStatement ps = connection.prepareStatement(query.toString());
+        if(query.toString().contains("?")) {
+            
+        }
+    }
+
 }

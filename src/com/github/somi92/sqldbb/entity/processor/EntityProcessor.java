@@ -13,6 +13,9 @@ import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -73,9 +76,29 @@ public class EntityProcessor {
         return dbEntity;
     }
     
-    public static HashMap<String,Object> getEntityColumnValues(DatabaseEntity dbe, Object o) {
-        
-        return null;
+    public static HashMap<String,Object> getEntityFieldValues(DatabaseEntity dbe, Object o) {
+        if(!dbe.getEntityClass().getName().equals(o.getClass().getName())) {
+            return null;
+        }
+        HashMap<String,Object> fieldValues = new HashMap<>();
+        List<String> fields = dbe.getAllFields();
+        for(String f : fields) {
+            try {
+                Field field = o.getClass().getDeclaredField(f);
+                field.setAccessible(true);
+                Object value = field.get(o);
+                fieldValues.put(f, value);
+            } catch (NoSuchFieldException ex) {
+                System.out.println(ex.getMessage());
+            } catch (SecurityException ex) {
+                System.out.println(ex.getMessage());
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getMessage());
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        return fieldValues;
     }
     
     public static void printEntity(DatabaseEntity dbe) {

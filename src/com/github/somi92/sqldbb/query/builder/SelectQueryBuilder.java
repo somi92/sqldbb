@@ -45,15 +45,6 @@ public class SelectQueryBuilder implements IQueryBuilder {
     @Override
     public void formatQuery(DatabaseEntity dbe) {
         String table = dbe.getTableName();
-//        List<String> columns = dbe.getAllColumns();
-//        String columnsForQuery = "";
-//        for(int i=0; i<columns.size(); i++) {
-//            if(i==(columns.size()-1)) {
-//                columnsForQuery += table+"."+columns.get(i);
-//            } else {
-//                columnsForQuery += table+"."+columns.get(i)+", ";
-//            }
-//        }
         
         String columnsForQuery = getColumnsForQuery(dbe);
         

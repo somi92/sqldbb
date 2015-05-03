@@ -14,6 +14,7 @@ import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
+import java.util.HashMap;
 
 /**
  *
@@ -24,9 +25,9 @@ public class Main {
     public static void main(String[] args) {
         
 //        DBBroker broker = new DB?Broker();
-        ClassA a = new ClassA();
-        ClassB b = new ClassB();
-        ClassC c = new ClassC();
+        ClassC c = new ClassC(31, 3);
+        ClassB b = new ClassB(21, "b1", c);
+        ClassA a = new ClassA(11, 111, "a1", b);
 //        broker.saveOrUpdateEntity(a);
         
         DatabaseEntity dbe1 = EntityProcessor.createEntity(a.getClass());
@@ -79,5 +80,18 @@ public class Main {
         query = qb.getQuery();
         System.out.println(query);
         System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        HashMap<String,Object> fieldValues = EntityProcessor.getEntityFieldValues(dbe1, a);
+        System.out.println("Fields values of object: "+dbe1.getEntityClass());
+        if(fieldValues != null) {
+            for(String s : fieldValues.keySet()) {
+                System.out.println("\t\tfield: "+s+" -> "+fieldValues.get(s));
+            }
+        } else {
+            System.out.println("Type error!");
+        }
     }
 }
