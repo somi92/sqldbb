@@ -84,11 +84,11 @@ public class Main {
         System.out.println("===================================================="
                 + "===================================\n");
         
-        HashMap<String,Object> fieldValues = EntityProcessor.getEntityFieldValues(dbe1, a);
+        EntityProcessor.setEntityFieldValues(dbe1, a);
         System.out.println("Fields values of object: "+dbe1.getEntityClass());
-        if(fieldValues != null) {
-            for(String s : fieldValues.keySet()) {
-                System.out.println("\t\tfield: "+s+" -> "+fieldValues.get(s));
+        if(dbe1.getFieldValues() != null) {
+            for(String s : dbe1.getFieldValues().keySet()) {
+                System.out.println("\t\tfield: "+s+" -> "+dbe1.getFieldValues().get(s));
             }
         } else {
             System.out.println("Type error!");

@@ -26,6 +26,7 @@ public class DatabaseEntity {
     private HashMap<String,String> columnFieldMapping;
     
     private HashMap<String,Class> fieldTypes;
+    private HashMap<String,Object> fieldValues;
     private HashMap<String,ForeignKeyEntity> references;
 
     public DatabaseEntity() {
@@ -41,6 +42,7 @@ public class DatabaseEntity {
         columnFieldMapping = new HashMap<>();
         
         fieldTypes = new HashMap<>();
+        fieldValues = new HashMap<>();
         references = new HashMap<>();
     }
 
@@ -132,6 +134,14 @@ public class DatabaseEntity {
         this.fieldTypes = fieldTypes;
     }
     
+    public HashMap<String,Object> getFieldValues() {
+        return fieldValues;
+    }
+
+    public void setFieldValues(HashMap<String,Object> fieldValues) {
+        this.fieldValues = fieldValues;
+    }
+    
     public HashMap<String,ForeignKeyEntity> getReferences() {
         return references;
     }
@@ -139,7 +149,7 @@ public class DatabaseEntity {
     public void setReferences(HashMap<String,ForeignKeyEntity> references) {
         this.references = references;
     }
-
+    
     public class ForeignKeyEntity {
         
         private String referencingTable;

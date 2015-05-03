@@ -90,13 +90,14 @@ public class DBBroker {
     
     public void loadEntity(Object o) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        EntityProcessor.setEntityFieldValues(dbe, o);
         QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
         qb.buildQuery(dbe);
         Query query = qb.getQuery();
         PreparedStatement ps = connection.prepareStatement(query.toString());
-        if(query.toString().contains("?")) {
-            
-        }
+        qb.prepareStatement(ps, dbe);
+        ResultSet rs = ps.executeQuery();
+        
     }
 
 }

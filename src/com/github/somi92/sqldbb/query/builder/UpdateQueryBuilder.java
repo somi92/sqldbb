@@ -7,6 +7,7 @@ package com.github.somi92.sqldbb.query.builder;
 
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -75,4 +76,8 @@ public class UpdateQueryBuilder implements IQueryBuilder {
         return query;
     }
     
+    @Override
+    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

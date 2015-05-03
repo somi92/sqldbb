@@ -7,6 +7,7 @@ package com.github.somi92.sqldbb.query.builder;
 
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -28,5 +29,9 @@ public class QueryBuilder {
     
     public Query getQuery() {
         return builder.getQuery();
+    }
+    
+    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) {
+        builder.prepareStatement(ps, dbe);
     }
 }
