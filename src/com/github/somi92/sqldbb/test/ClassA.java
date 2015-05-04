@@ -26,15 +26,18 @@ public class ClassA {
     private String a2;
     @ForeignKey(name = "bT", referencingTable = "TableB", referencingColumn = "b1T")
     private ClassB b;
+    @ForeignKey(name = "dT", referencingTable = "TableD", referencingColumn = "d1T")
+    private ClassD d;
     
     public ClassA() {
     }
 
-    public ClassA(int a1, int a11, String a2, ClassB b) {
+    public ClassA(int a1, int a11, String a2, ClassB b, ClassD d) {
         this.a1 = a1;
         this.a11 = a11;
         this.a2 = a2;
         this.b = b;
+        this.d = d;
     }
 
     public int getA1() {
@@ -68,6 +71,14 @@ public class ClassA {
     public void setB(ClassB b) {
         this.b = b;
     }
+    
+    public ClassD getD() {
+        return d;
+    }
+
+    public void setD(ClassD d) {
+        this.d = d;
+    }
 
     @Override
     public int hashCode() {
@@ -97,7 +108,7 @@ public class ClassA {
 
     @Override
     public String toString() {
-        return "ClassA{" + "a1=" + a1 + ", a11=" + a11 + ", a2=" + a2 + ", b=" + b + '}';
+        return "ClassA{" + "a1=" + a1 + ", a11=" + a11 + ", a2=" + a2 + ", b=" + b + ", d=" + d + '}';
     }
     
     

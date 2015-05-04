@@ -26,9 +26,10 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         /*
 //        DBBroker broker = new DB?Broker();
+        ClassD d = new ClassD(41, "d1");
         ClassC c = new ClassC(31, 3);
         ClassB b = new ClassB(21, "b1", c);
-        ClassA a = new ClassA(11, 111, "a1", b);
+        ClassA a = new ClassA(11, 111, "a1", b, d);
 //        broker.saveOrUpdateEntity(a);
         
         DatabaseEntity dbe1 = EntityProcessor.createEntity(a.getClass());
@@ -94,9 +95,12 @@ public class Main {
         } else {
             System.out.println("Type error!");
         }
-                */
+        */      
         DBBroker broker = new DBBroker();
         broker.openDatabaseConnection();
+        
+        ClassD d = new ClassD();
+        d.setD1(41);
         
         ClassC c = new ClassC();
         c.setC1(32);
@@ -108,9 +112,20 @@ public class Main {
         a.setA1(12);
         a.setA11(112);
         
-        ClassA loaded = broker.loadEntity(a);
+        Object[] loaded = new Object[4];
+        
+        loaded[0] = broker.loadEntity(d);
+        loaded[1] = broker.loadEntity(c);
+        loaded[2] = broker.loadEntity(b);
+        loaded[3] = broker.loadEntity(a);
         
         broker.closeDatabaseConnection();
-        System.out.println(loaded);
+        
+        System.out.println("");
+        for(Object o : loaded) {
+            System.out.println(o);
+        }
+        
+        System.out.println("");
     }
 }

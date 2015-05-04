@@ -129,13 +129,13 @@ public class SelectQueryBuilder implements IQueryBuilder {
                 columnsForQuery += table+"."+columns.get(i)+", ";
             }
         }
-        if(columnsForQuery.endsWith(",")) {
-            columnsForQuery = columnsForQuery.substring(0, columnsForQuery.length()-1);
+        if(columnsForQuery.endsWith(", ")) {
+            columnsForQuery = columnsForQuery.substring(0, columnsForQuery.length()-2);
         }
         for(String s : foreingKeys) {
             DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(s);
             DatabaseEntity foreignDbe = fke.getDbe();
-            columnsForQuery += getColumnsForQuery(foreignDbe);
+            columnsForQuery += ", "+getColumnsForQuery(foreignDbe);
         }
         return columnsForQuery;
     }
