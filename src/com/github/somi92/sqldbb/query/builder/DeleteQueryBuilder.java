@@ -8,6 +8,7 @@ package com.github.somi92.sqldbb.query.builder;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -82,7 +83,10 @@ public class DeleteQueryBuilder extends AbstractQueryBuilder {
     }
     
     @Override
-    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
+        List<String> primaryKeys = dbe.getPrimaryKeys();
+        for(int i=0; i<primaryKeys.size(); i++) {
+            setPSValue(dbe, primaryKeys.get(i), i, ps);
+        }
     }
 }

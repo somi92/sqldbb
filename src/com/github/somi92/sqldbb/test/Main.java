@@ -14,6 +14,7 @@ import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
+import com.sun.corba.se.pept.broker.Broker;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class Main {
     
     public static void main(String[] args) throws SQLException {
-        /*
+        
 //        DBBroker broker = new DB?Broker();
         ClassD d = new ClassD(41, "d1");
         ClassC c = new ClassC(31, 3);
@@ -95,10 +96,10 @@ public class Main {
         } else {
             System.out.println("Type error!");
         }
-        */
         
         
-        DBBroker broker = new DBBroker();
+        
+        DBBroker broker = new DBBroker();/*
         broker.openDatabaseConnection();
         
         ClassD d = new ClassD();
@@ -127,7 +128,7 @@ public class Main {
         for(Object o : loaded) {
             System.out.println(o);
         }
-        
+        */
 //        System.out.println("");
 //        broker.openDatabaseConnection();
 //        List<ClassA> list = broker.loadEntities(new ClassA());
@@ -152,10 +153,19 @@ public class Main {
         ClassB insertB = new ClassB(24, "b4", insertC);
         ClassA insertA = new ClassA(13, 113, "a3", insertB, insertD);
         
+//        broker.openDatabaseConnection();
+//        if(broker.insertEntity(insertA)>0) {
+//            broker.commitTransaction();
+//            System.out.println("Inserted "+insertA);
+//        }
+//        broker.closeDatabaseConnection();
+        
+        ClassA deleteA = new ClassA();
+        deleteA.setA1(14);
+        deleteA.setA11(114);
         broker.openDatabaseConnection();
-        if(broker.insertEntity(insertA)>0) {
+        if(broker.deleteEntity(deleteA)>0) {
             broker.commitTransaction();
-            System.out.println("Inserted "+insertA);
         }
         broker.closeDatabaseConnection();
         
