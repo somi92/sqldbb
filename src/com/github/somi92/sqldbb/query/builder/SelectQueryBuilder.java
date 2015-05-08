@@ -15,9 +15,8 @@ import java.util.List;
  *
  * @author milos
  */
-public class SelectQueryBuilder implements IQueryBuilder {
+public class SelectQueryBuilder extends AbstractQueryBuilder {
     
-    private Query query;
     private boolean usePKCondition;
     
     public SelectQueryBuilder(boolean usePKCondition) {
@@ -71,45 +70,44 @@ public class SelectQueryBuilder implements IQueryBuilder {
                 condition);
         query.setQuery(queryValue);
     }
-
-    @Override
-    public Query getQuery() {
-        return query;
-    }
     
     @Override
     public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
         if(usePKCondition) {
             List<String> primaryKeys = dbe.getPrimaryKeys();
             for(int i=0; i<primaryKeys.size(); i++) {
-                String field = dbe.getColumnFieldMapping().get(primaryKeys.get(i));
-                Object fieldValue = dbe.getFieldValues().get(field);
-                Class fieldType = dbe.getFieldTypes().get(field);
-                switch(fieldType.getSimpleName()) {
-                    case "int":
-                        ps.setInt(i+1, (int) fieldValue);
-                        break;
-                    case "String":
-                        ps.setString(i+1, (String) fieldValue);
-                        break;
-                    case "long":
-                        ps.setLong(i+1, (long) fieldValue);
-                        break;
-                    case "float":
-                        ps.setFloat(i+1, (float) fieldValue);
-                        break;
-                    case "double":
-                        ps.setDouble(i+1, (double) fieldValue);
-                        break;
-                    case "boolean":
-                        ps.setBoolean(i+1, (boolean) fieldValue);
-                        break;
-                    case "Date":
-                        ps.setDate(i+1, (java.sql.Date) fieldValue);
-                        break;
-                    default:
-                        ps.setString(i+1, (String) fieldValue);
-                }
+                
+//                String field = dbe.getColumnFieldMapping().get(primaryKeys.get(i));
+//                Object fieldValue = dbe.getFieldValues().get(field);
+//                Class fieldType = dbe.getFieldTypes().get(field);
+//                switch(fieldType.getSimpleName()) {
+//                    case "int":
+//                        ps.setInt(i+1, (int) fieldValue);
+//                        break;
+//                    case "String":
+//                        ps.setString(i+1, (String) fieldValue);
+//                        break;
+//                    case "long":
+//                        ps.setLong(i+1, (long) fieldValue);
+//                        break;
+//                    case "float":
+//                        ps.setFloat(i+1, (float) fieldValue);
+//                        break;
+//                    case "double":
+//                        ps.setDouble(i+1, (double) fieldValue);
+//                        break;
+//                    case "boolean":
+//                        ps.setBoolean(i+1, (boolean) fieldValue);
+//                        break;
+//                    case "Date":
+//                        ps.setDate(i+1, (java.sql.Date) fieldValue);
+//                        break;
+//                    default:
+//                        ps.setString(i+1, (String) fieldValue);
+//                }
+                
+                setPSValue(dbe, primaryKeys.get(i), i, ps);
+                
             }
         }
     }

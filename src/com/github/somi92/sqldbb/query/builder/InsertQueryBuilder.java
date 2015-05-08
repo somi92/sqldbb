@@ -8,15 +8,14 @@ package com.github.somi92.sqldbb.query.builder;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  *
  * @author milos
  */
-public class InsertQueryBuilder implements IQueryBuilder {
-    
-    private Query query;
+public class InsertQueryBuilder extends AbstractQueryBuilder {
     
     public InsertQueryBuilder() {
         query = new Query();
@@ -65,12 +64,7 @@ public class InsertQueryBuilder implements IQueryBuilder {
     }
 
     @Override
-    public Query getQuery() {
-        return query;
-    }
-    
-    @Override
-    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) {
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

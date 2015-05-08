@@ -14,9 +14,8 @@ import java.util.List;
  *
  * @author milos
  */
-public class DeleteQueryBuilder implements IQueryBuilder {
+public class DeleteQueryBuilder extends AbstractQueryBuilder {
     
-    private Query query;
     private boolean resetTable;
     
     public DeleteQueryBuilder(boolean resetTable) {
@@ -80,11 +79,6 @@ public class DeleteQueryBuilder implements IQueryBuilder {
                 condition);
         }
         query.setQuery(queryValue);
-    }
-
-    @Override
-    public Query getQuery() {
-        return query;
     }
     
     @Override

@@ -16,9 +16,9 @@ import java.sql.SQLException;
  */
 public class QueryBuilder {
     
-    private IQueryBuilder builder;
+    private AbstractQueryBuilder builder;
     
-    public QueryBuilder(IQueryBuilder builder) {
+    public QueryBuilder(AbstractQueryBuilder builder) {
         this.builder = builder;
     }
     
