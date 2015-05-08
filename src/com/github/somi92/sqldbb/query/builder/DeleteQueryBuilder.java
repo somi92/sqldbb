@@ -88,7 +88,7 @@ public class DeleteQueryBuilder implements IQueryBuilder {
     }
     
     @Override
-    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) {
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

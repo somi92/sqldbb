@@ -20,5 +20,5 @@ public interface IQueryBuilder {
     public void setQueryFormat();
     public void formatQuery(DatabaseEntity dbe);
     public Query getQuery();
-    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException;
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException;
 }

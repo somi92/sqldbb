@@ -78,7 +78,7 @@ public class SelectQueryBuilder implements IQueryBuilder {
     }
     
     @Override
-    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
         if(usePKCondition) {
             List<String> primaryKeys = dbe.getPrimaryKeys();
             for(int i=0; i<primaryKeys.size(); i++) {

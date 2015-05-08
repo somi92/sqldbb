@@ -15,7 +15,7 @@ import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -24,7 +24,7 @@ import java.util.HashMap;
 public class Main {
     
     public static void main(String[] args) throws SQLException {
-        /*
+        
 //        DBBroker broker = new DB?Broker();
         ClassD d = new ClassD(41, "d1");
         ClassC c = new ClassC(31, 3);
@@ -95,9 +95,11 @@ public class Main {
         } else {
             System.out.println("Type error!");
         }
-        */      
+        
+        
+        
         DBBroker broker = new DBBroker();
-        broker.openDatabaseConnection();
+        /*broker.openDatabaseConnection();
         
         ClassD d = new ClassD();
         d.setD1(41);
@@ -125,7 +127,25 @@ public class Main {
         for(Object o : loaded) {
             System.out.println(o);
         }
+        */
+        System.out.println("");
+        broker.openDatabaseConnection();
+        List<ClassA> list = broker.loadEntities(new ClassA());
+        for(ClassA entity : list) {
+            System.out.println(entity);
+        }
+        ClassB b1 = broker.loadEntity(new ClassB(23, null, c));
+        ClassA forUpdate = broker.loadEntity(a);
+        forUpdate.setA1(11);
+        forUpdate.setA11(111);
+        forUpdate.setA2("updated a2");
+        forUpdate.setB(b1);
+        int rowsAffected = broker.updateEntity(forUpdate);
+        if(rowsAffected>0) {
+            broker.commitTransaction();
+        }
         
+        broker.closeDatabaseConnection();
         System.out.println("");
     }
 }

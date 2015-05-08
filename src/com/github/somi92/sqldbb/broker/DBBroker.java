@@ -10,6 +10,7 @@ import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
+import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -17,6 +18,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,7 +83,7 @@ public class DBBroker {
     
     /* Utility methods */
     private ResultSet executePreparedStatementQuery(DatabaseEntity dbe, Query query) throws SQLException {
-//        PreparedStatement ps = connection.prepareStatement(query.toString());
+//        PreparedStatement ps = connection.fillPreparedStatement(query.toString());
 //        if(query.toString().contains("?")) {
 //            
 //        }
@@ -100,18 +103,47 @@ public class DBBroker {
         qb.buildQuery(dbe);
         Query query = qb.getQuery();
         PreparedStatement ps = connection.prepareStatement(query.toString());
-        qb.prepareStatement(ps, dbe);
+        qb.fillPreparedStatement(ps, dbe);
         ResultSet rs = ps.executeQuery();
         T entity = null;
         while(rs.next()) {
-            entity = createTypeInstance(o, dbe, rs);
+            entity = createTypeInstance(dbe, rs);
         }
+        rs.close();
+        ps.close();
         return entity;
     }
+    
+    public <T> List<T> loadEntities(T o) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(false));
+        qb.buildQuery(dbe);
+        Query query = qb.getQuery();
+        Statement stm = connection.createStatement();
+        ResultSet rs = stm.executeQuery(query.toString());
+        List<T> entities = new ArrayList<>();
+        while(rs.next()) {
+            T entity = createTypeInstance(dbe, rs);
+            entities.add(entity);
+        }
+        return entities;
+    }
 
-    private <T> T createTypeInstance(T o, DatabaseEntity dbe, ResultSet rs) throws SQLException {
+    public <T> int updateEntity(T o) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        EntityProcessor.setEntityFieldValues(dbe, o);
+        QueryBuilder qb = new QueryBuilder(new UpdateQueryBuilder());
+        qb.buildQuery(dbe);
+        Query query = qb.getQuery();
+        PreparedStatement ps = connection.prepareStatement(query.toString());
+        qb.fillPreparedStatement(ps, dbe);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected;
+    }
+    
+    private <T> T createTypeInstance(DatabaseEntity dbe, ResultSet rs) throws SQLException {
         try {
-            T t = (T) o.getClass().newInstance();
+            T t = (T) dbe.getEntityClass().newInstance();
             List<String> fields = dbe.getAllFields();
             for(String field : fields) {
                 Class fieldType = dbe.getFieldTypes().get(field);
@@ -123,7 +155,7 @@ public class DBBroker {
                 
                 if(dbe.getForeignKeys().contains(dbe.getFieldColumnMapping().get(field))) {
                     DatabaseEntity dbe2 = dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).getDbe();
-                    method.invoke(t, new Object[] {createTypeInstance(fieldType.newInstance(), dbe2, rs)});
+                    method.invoke(t, new Object[] {createTypeInstance(dbe2, rs)});
                     continue;
                 }
                 

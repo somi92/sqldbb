@@ -32,7 +32,7 @@ public class QueryBuilder {
         return builder.getQuery();
     }
     
-    public void prepareStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
-        builder.prepareStatement(ps, dbe);
+    public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
+        builder.fillPreparedStatement(ps, dbe);
     }
 }
