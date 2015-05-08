@@ -146,6 +146,19 @@ public class Main {
 //        }
 //        
 //        broker.closeDatabaseConnection();
-//        System.out.println("");
+        
+        ClassD insertD = new ClassD(45, "d5");
+        ClassC insertC = new ClassC(34, 304);
+        ClassB insertB = new ClassB(24, "b4", insertC);
+        ClassA insertA = new ClassA(13, 113, "a3", insertB, insertD);
+        
+        broker.openDatabaseConnection();
+        if(broker.insertEntity(insertA)>0) {
+            broker.commitTransaction();
+            System.out.println("Inserted "+insertA);
+        }
+        broker.closeDatabaseConnection();
+        
+        System.out.println("");
     }
 }

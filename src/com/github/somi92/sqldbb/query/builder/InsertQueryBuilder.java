@@ -65,6 +65,9 @@ public class InsertQueryBuilder extends AbstractQueryBuilder {
 
     @Override
     public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> columns = dbe.getAllColumns();
+        for(int i=0; i<columns.size(); i++) {
+            setPSValue(dbe, columns.get(i), i, ps);
+        }
     }
 }

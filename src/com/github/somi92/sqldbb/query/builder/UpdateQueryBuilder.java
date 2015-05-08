@@ -6,7 +6,6 @@
 package com.github.somi92.sqldbb.query.builder;
 
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
-import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

@@ -8,6 +8,7 @@ package com.github.somi92.sqldbb.broker;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
+import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
@@ -127,6 +128,18 @@ public class DBBroker {
             entities.add(entity);
         }
         return entities;
+    }
+    
+    public <T> int insertEntity(T o) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        EntityProcessor.setEntityFieldValues(dbe, o);
+        QueryBuilder qb = new QueryBuilder(new InsertQueryBuilder());
+        qb.buildQuery(dbe);
+        Query query = qb.getQuery();
+        PreparedStatement ps = connection.prepareStatement(query.toString());
+        qb.fillPreparedStatement(ps, dbe);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected;
     }
 
     public <T> int updateEntity(T o) throws SQLException {
