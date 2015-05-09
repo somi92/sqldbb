@@ -9,6 +9,7 @@ import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,18 +19,26 @@ import java.util.List;
 public class SelectQueryBuilder extends AbstractQueryBuilder {
     
     private boolean usePKCondition;
+    private List<String> searchCriteria;
     
     public SelectQueryBuilder(boolean usePKCondition) {
         query = new Query();
         this.usePKCondition = usePKCondition;
+        searchCriteria = null;
     }
 
+    public SelectQueryBuilder(List<String> searchCriteria) {
+        query = new Query();
+        usePKCondition = false;
+        this.searchCriteria = searchCriteria;
+    }
+    
     @Override
     public void setKeywords() {
         String[] keywords = new String[3];
         keywords[0] = "SELECT";
         keywords[1] = "FROM";
-        if(usePKCondition) {
+        if(usePKCondition || searchCriteria != null) {
             keywords[2] = "WHERE";
         } else {
             keywords[2] = "";
@@ -53,10 +62,23 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
         String condition = "";
         if(usePKCondition) {
             for(int i=0; i<primaryKeys.size(); i++) {
-            if(i==(primaryKeys.size()-1)) {
-                condition += table+"."+primaryKeys.get(i)+"=?";
-            } else {
-                condition += table+"."+primaryKeys.get(i)+"=? AND ";
+                if(i==(primaryKeys.size()-1)) {
+                    condition += table+"."+primaryKeys.get(i)+"=?";
+                } else {
+                    condition += table+"."+primaryKeys.get(i)+"=? AND ";
+                }
+            }
+        }
+        
+        if(searchCriteria != null) {
+            String[] criteriaKeys = searchCriteria.
+                    toArray(new String[searchCriteria.size()]);
+            for(int i=0; i<criteriaKeys.length; i++) {
+                String column = dbe.getFieldColumnMapping().get(criteriaKeys[i]);
+                if(i==(criteriaKeys.length-1)) {
+                    condition += table+"."+column+"=?";
+                } else {
+                    condition += table+"."+column+"=? AND ";
                 }
             }
         }
@@ -75,39 +97,17 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
     public void fillPreparedStatement(PreparedStatement ps, DatabaseEntity dbe) throws SQLException {
         if(usePKCondition) {
             List<String> primaryKeys = dbe.getPrimaryKeys();
-            for(int i=0; i<primaryKeys.size(); i++) {
-                
-//                String field = dbe.getColumnFieldMapping().get(primaryKeys.get(i));
-//                Object fieldValue = dbe.getFieldValues().get(field);
-//                Class fieldType = dbe.getFieldTypes().get(field);
-//                switch(fieldType.getSimpleName()) {
-//                    case "int":
-//                        ps.setInt(i+1, (int) fieldValue);
-//                        break;
-//                    case "String":
-//                        ps.setString(i+1, (String) fieldValue);
-//                        break;
-//                    case "long":
-//                        ps.setLong(i+1, (long) fieldValue);
-//                        break;
-//                    case "float":
-//                        ps.setFloat(i+1, (float) fieldValue);
-//                        break;
-//                    case "double":
-//                        ps.setDouble(i+1, (double) fieldValue);
-//                        break;
-//                    case "boolean":
-//                        ps.setBoolean(i+1, (boolean) fieldValue);
-//                        break;
-//                    case "Date":
-//                        ps.setDate(i+1, (java.sql.Date) fieldValue);
-//                        break;
-//                    default:
-//                        ps.setString(i+1, (String) fieldValue);
-//                }
-                
-                setPSValue(dbe, primaryKeys.get(i), i, ps);
-                
+            for(int i=0; i<primaryKeys.size(); i++) {    
+                setPSValue(dbe, primaryKeys.get(i), i, ps);    
+            }
+        }
+        
+        if(searchCriteria != null) {
+            String[] criteriaKeys = searchCriteria.
+                    toArray(new String[searchCriteria.size()]);
+            for(int i=0; i<criteriaKeys.length; i++) {
+                String column = dbe.getFieldColumnMapping().get(criteriaKeys[i]);
+                setPSValue(dbe, column, i, ps);
             }
         }
     }

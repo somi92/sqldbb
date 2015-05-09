@@ -116,13 +116,26 @@ public class DBBroker {
         return entity;
     }
     
-    public <T> List<T> loadEntities(T o) throws SQLException {
+    public <T> List<T> loadEntities(T o, List<String> searchCriteria) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
-        QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(false));
+        QueryBuilder qb;
+        if(searchCriteria != null) {
+            qb = new QueryBuilder(new SelectQueryBuilder(searchCriteria));
+        } else {
+            qb = new QueryBuilder(new SelectQueryBuilder(false));
+        }
         qb.buildQuery(dbe);
         Query query = qb.getQuery();
-        Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery(query.toString());
+        ResultSet rs;
+        if(searchCriteria != null) {
+            PreparedStatement ps = connection.prepareStatement(query.toString());
+            EntityProcessor.setEntityFieldValues(dbe, o);
+            qb.fillPreparedStatement(ps, dbe);
+            rs = ps.executeQuery();
+        } else {
+            Statement stm = connection.createStatement();
+            rs = stm.executeQuery(query.toString());
+        }
         List<T> entities = new ArrayList<>();
         while(rs.next()) {
             T entity = createTypeInstance(dbe, rs);

@@ -16,6 +16,7 @@ import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
 import com.sun.corba.se.pept.broker.Broker;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
 public class Main {
     
     public static void main(String[] args) throws SQLException {
-        
+        /*
 //        DBBroker broker = new DB?Broker();
         ClassD d = new ClassD(41, "d1");
         ClassC c = new ClassC(31, 3);
@@ -96,7 +97,7 @@ public class Main {
         } else {
             System.out.println("Type error!");
         }
-        
+        */
         
         
         DBBroker broker = new DBBroker();/*
@@ -129,12 +130,22 @@ public class Main {
             System.out.println(o);
         }
         */
-//        System.out.println("");
-//        broker.openDatabaseConnection();
-//        List<ClassA> list = broker.loadEntities(new ClassA());
-//        for(ClassA entity : list) {
-//            System.out.println(entity);
-//        }
+        System.out.println("");
+        broker.openDatabaseConnection();
+        ClassD searchD = broker.loadEntity(new ClassD(45, "search"));
+        searchD.setD2("search");
+        ClassA searchA = new ClassA();
+        searchA.setA2("search");
+        searchA.setD(searchD);
+        
+        List<String> searchCriteria = new ArrayList<>();
+//        searchCriteria.add("a2");
+        searchCriteria.add("d");
+        List<ClassA> list = broker.loadEntities(searchA, searchCriteria);
+        for(ClassA entity : list) {
+            System.out.println(entity);
+        }
+        
 //        ClassB b1 = broker.loadEntity(new ClassB(23, null, c));
 //        ClassA forUpdate = broker.loadEntity(a);
 //        forUpdate.setA1(11);
@@ -145,9 +156,9 @@ public class Main {
 //        if(rowsAffected>0) {
 //            broker.commitTransaction();
 //        }
-//        
-//        broker.closeDatabaseConnection();
         
+        broker.closeDatabaseConnection();
+        /*
         ClassD insertD = new ClassD(45, "d5");
         ClassC insertC = new ClassC(34, 304);
         ClassB insertB = new ClassB(24, "b4", insertC);
@@ -169,6 +180,6 @@ public class Main {
         }
         broker.closeDatabaseConnection();
         
-        System.out.println("");
+        System.out.println("");*/
     }
 }
