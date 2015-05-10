@@ -20,9 +20,11 @@ public class ClassB {
     
     @PrimaryKey("b1T")
     private int b1;
+    
     @Column("b2T")
     private String b2;
-    @ForeignKey(name = "cT", referencingTable = "TableC", referencingColumn = "c1T")
+    
+    @ForeignKey(column = "cT", referencingTable = "TableC", referencingColumn = "c1T")
     private ClassC c;
 
     public ClassB() {

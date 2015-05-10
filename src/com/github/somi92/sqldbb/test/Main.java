@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class Main {
     
+    private static DBBroker broker;
+    
     public static void main(String[] args) throws SQLException {
         /*
 //        DBBroker broker = new DB?Broker();
@@ -100,7 +102,7 @@ public class Main {
         */
         
         
-        DBBroker broker = new DBBroker();/*
+        /*DBBroker broker = new DBBroker();
         broker.openDatabaseConnection();
         
         ClassD d = new ClassD();
@@ -130,21 +132,21 @@ public class Main {
             System.out.println(o);
         }
         */
-        System.out.println("");
-        broker.openDatabaseConnection();
-        ClassD searchD = broker.loadEntity(new ClassD(45, "search"));
-        searchD.setD2("search");
-        ClassA searchA = new ClassA();
-        searchA.setA2("search");
-        searchA.setD(searchD);
-        
-        List<String> searchCriteria = new ArrayList<>();
-//        searchCriteria.add("a2");
-        searchCriteria.add("d");
-        List<ClassA> list = broker.loadEntities(searchA, searchCriteria);
-        for(ClassA entity : list) {
-            System.out.println(entity);
-        }
+//        System.out.println("");
+//        broker.openDatabaseConnection();
+//        ClassD searchD = broker.loadEntity(new ClassD(45, "search"));
+//        searchD.setD2("search");
+//        ClassA searchA = new ClassA();
+//        searchA.setA2("search");
+//        searchA.setD(searchD);
+//        
+//        List<String> searchCriteria = new ArrayList<>();
+////        searchCriteria.add("a2");
+//        searchCriteria.add("d");
+//        List<ClassA> list = broker.loadEntities(searchA, searchCriteria);
+//        for(ClassA entity : list) {
+//            System.out.println(entity);
+//        }
         
 //        ClassB b1 = broker.loadEntity(new ClassB(23, null, c));
 //        ClassA forUpdate = broker.loadEntity(a);
@@ -156,8 +158,8 @@ public class Main {
 //        if(rowsAffected>0) {
 //            broker.commitTransaction();
 //        }
-        
-        broker.closeDatabaseConnection();
+//        
+//        broker.closeDatabaseConnection();
         /*
         ClassD insertD = new ClassD(45, "d5");
         ClassC insertC = new ClassC(34, 304);
@@ -181,5 +183,29 @@ public class Main {
         broker.closeDatabaseConnection();
         
         System.out.println("");*/
+        
+        broker = new DBBroker();
+        broker.openDatabaseConnection();
+        
+        testComplexKeys();
+        
+        broker.closeDatabaseConnection();
+        
+    }
+    
+    public static void testComplexKeys() throws SQLException {
+//        List<String> search = new ArrayList<>();
+//        search.add("d");
+//        ClassCD newCD = new ClassCD();
+//        newCD.setD(new ClassD(42, null));
+//        List<ClassCD> list = broker.loadEntities(newCD, null);
+//        for(ClassCD cd : list) {
+//            System.out.println(cd);
+//        }
+        ClassCD loaded = new ClassCD();
+        loaded.setC(new ClassC(31, 0));
+        loaded.setD(new ClassD(44, null));
+        loaded = broker.loadEntity(loaded);
+        System.out.println(loaded);
     }
 }

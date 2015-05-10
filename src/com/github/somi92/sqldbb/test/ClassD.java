@@ -19,6 +19,7 @@ public class ClassD {
     
     @PrimaryKey("d1T")
     private int d1;
+    
     @Column("d2T")
     private String d2;
 

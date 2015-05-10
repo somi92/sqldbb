@@ -72,8 +72,12 @@ public class DatabaseEntity {
     
     public void addPrimaryKey(String primaryKey, String field, Class c) {
         primaryKeys.add(primaryKey);
-        allColumns.add(primaryKey);
-        allFields.add(field);
+        if(!allColumns.contains(primaryKey)) {
+            allColumns.add(primaryKey);
+        }
+        if(!allFields.contains(field)) {
+            allFields.add(field);
+        }
         columnFieldMapping.put(primaryKey, field);
         fieldTypes.put(field, c);
     }
@@ -88,8 +92,12 @@ public class DatabaseEntity {
     
     public void addForeignKey(String foreignKey, String field, Class c, ForeignKeyEntity fke) {
         foreignKeys.add(foreignKey);
-        allColumns.add(foreignKey);
-        allFields.add(field);
+        if(!allColumns.contains(foreignKey)) {
+            allColumns.add(foreignKey);
+        }
+        if(!allFields.contains(field)) {
+            allFields.add(field);
+        }
         columnFieldMapping.put(foreignKey, field);
         references.put(foreignKey, fke);
         fieldTypes.put(field, c);

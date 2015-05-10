@@ -20,13 +20,17 @@ public class ClassA {
     
     @PrimaryKey("a1T")
     private int a1;
+    
     @PrimaryKey("a11T")
     private int a11;
+    
     @Column("a2T")
     private String a2;
-    @ForeignKey(name = "bT", referencingTable = "TableB", referencingColumn = "b1T")
+    
+    @ForeignKey(column = "bT", referencingTable = "TableB", referencingColumn = "b1T")
     private ClassB b;
-    @ForeignKey(name = "dT", referencingTable = "TableD", referencingColumn = "d1T")
+    
+    @ForeignKey(column = "dT", referencingTable = "TableD", referencingColumn = "d1T")
     private ClassD d;
     
     public ClassA() {

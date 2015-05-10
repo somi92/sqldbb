@@ -60,7 +60,7 @@ public class EntityProcessor {
                         DatabaseEntity e = createEntity(fields[i].getType());
                         ForeignKey fk = (ForeignKey) annots[j];
                         DatabaseEntity.ForeignKeyEntity fke = e.new ForeignKeyEntity(fk.referencingTable(), fk.referencingColumn(), e);
-                        dbEntity.addForeignKey(fk.name(), fields[i].getName(), fields[i].getType(), fke);
+                        dbEntity.addForeignKey(fk.column(), fields[i].getName(), fields[i].getType(), fke);
                     }
                 }
             }

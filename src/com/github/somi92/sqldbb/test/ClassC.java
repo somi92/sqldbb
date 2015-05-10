@@ -19,6 +19,7 @@ public class ClassC {
     
     @PrimaryKey("c1T")
     private int c1;
+    
     @Column("c2T")
     private int c2;
 
