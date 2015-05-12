@@ -187,10 +187,115 @@ public class Main {
         broker = new DBBroker();
         broker.openDatabaseConnection();
         
-        testComplexKeys();
+//        testEntityProcessorAndQueryBuilders();
+//        testComplexKeys();
+        testCollections();
         
         broker.closeDatabaseConnection();
         
+    }
+    
+    public static void testEntityProcessorAndQueryBuilders() {
+        ClassD d = new ClassD(41, "d1");
+        ClassC c = new ClassC(31, 3);
+        ClassB b = new ClassB(21, "b1", c);
+        ClassA a = new ClassA(11, 111, "a1", b, d);
+        
+        ClassF f = new ClassF();
+        
+        DatabaseEntity dbe1 = EntityProcessor.createEntity(f.getClass());
+        EntityProcessor.printEntity(dbe1);
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+//        DatabaseEntity dbe2 = EntityProcessor.createEntity(b.getClass());
+//        EntityProcessor.printEntity(dbe2);
+//        
+//        System.out.println("===================================================="
+//                + "===================================\n");
+//        
+//        DatabaseEntity dbe3 = EntityProcessor.createEntity(c.getClass());
+//        EntityProcessor.printEntity(dbe3);
+//        
+//        System.out.println("===================================================="
+//                + "===================================\n");
+//        
+//        EntityProcessor.setEntityFieldValues(dbe1, a);
+//        System.out.println("Fields values of object: "+dbe1.getEntityClass());
+//        if(dbe1.getFieldValues() != null) {
+//            for(String s : dbe1.getFieldValues().keySet()) {
+//                System.out.println("\t\tfield: "+s+" -> "+dbe1.getFieldValues().get(s));
+//            }
+//        } else {
+//            System.out.println("Type error!");
+//        }
+//        
+//        System.out.println("===================================================="
+//                + "===================================\n");
+        
+        QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
+        qb.buildQuery(dbe1);
+        Query query = qb.getQuery();
+        System.out.println(query);
+        System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        qb = new QueryBuilder(new UpdateQueryBuilder());
+        qb.buildQuery(dbe1);
+        query = qb.getQuery();
+        System.out.println(query);
+        System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        qb = new QueryBuilder(new InsertQueryBuilder());
+        qb.buildQuery(dbe1);
+        query = qb.getQuery();
+        System.out.println(query);
+        System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+        
+        qb = new QueryBuilder(new DeleteQueryBuilder(false));
+        qb.buildQuery(dbe1);
+        query = qb.getQuery();
+        System.out.println(query);
+        System.out.println("");
+        
+        System.out.println("===================================================="
+                + "===================================\n");
+    }
+    
+    public static void testEntityLoading() throws SQLException {
+        ClassD d = new ClassD();
+        d.setD1(44);
+        
+        ClassC c = new ClassC();
+        c.setC1(32);
+        
+        ClassB b = new ClassB();
+        b.setB1(21);
+        
+        ClassA a = new ClassA();
+        a.setA1(11);
+        a.setA11(111);
+        
+        Object[] loaded = new Object[4];
+        
+        loaded[0] = broker.loadEntity(d, false);
+        loaded[1] = broker.loadEntity(c, false);
+        loaded[2] = broker.loadEntity(b, false);
+        loaded[3] = broker.loadEntity(a, false);
+        
+        System.out.println("");
+        for(Object o : loaded) {
+            System.out.println(o);
+        }
     }
     
     public static void testComplexKeys() throws SQLException {
@@ -205,7 +310,19 @@ public class Main {
         ClassCD loaded = new ClassCD();
         loaded.setC(new ClassC(31, 0));
         loaded.setD(new ClassD(44, null));
-        loaded = broker.loadEntity(loaded);
+        loaded = broker.loadEntity(loaded, false);
         System.out.println(loaded);
+    }
+    
+    public static void testCollections() throws SQLException {
+//        ClassF f = new ClassF();
+//        f.setF1(51);
+        ClassG g = new ClassG(null, 1, "s");
+        List<String> search = new ArrayList<>();
+        search.add("g2");
+        List<ClassG> loadedF = broker.loadEntities(g, search, true);
+        for(ClassG fe : loadedF) {
+            System.out.println(fe);
+        }
     }
 }

@@ -7,6 +7,7 @@ package com.github.somi92.sqldbb.entity.processor;
 
 import com.github.somi92.sqldbb.annotations.Column;
 import com.github.somi92.sqldbb.annotations.ForeignKey;
+import com.github.somi92.sqldbb.annotations.Collection;
 import com.github.somi92.sqldbb.annotations.PrimaryKey;
 import com.github.somi92.sqldbb.annotations.Table;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
@@ -59,9 +60,17 @@ public class EntityProcessor {
                     if(annots[j] instanceof ForeignKey) {
                         DatabaseEntity e = createEntity(fields[i].getType());
                         ForeignKey fk = (ForeignKey) annots[j];
-                        DatabaseEntity.ForeignKeyEntity fke = e.new ForeignKeyEntity(fk.referencingTable(), fk.referencingColumn(), e);
+                        DatabaseEntity.ForeignKeyEntity fke = e.new ForeignKeyEntity(fk.referencingTable(),
+                                fk.referencingColumn(), fk.isCollectionItem(), e);
                         dbEntity.addForeignKey(fk.column(), fields[i].getName(), fields[i].getType(), fke);
+                        continue;
                     }
+                    
+                    if(annots[j] instanceof Collection) {
+                        Collection ce = (Collection) annots[j];
+                        DatabaseEntity.CollectionEntity pe = dbEntity.new CollectionEntity(ce.childEntityClass(), ce.referencingField());
+                        dbEntity.addParentEntity(fields[i].getName(), fields[i].getType(), pe);
+                    } 
                 }
             }
             

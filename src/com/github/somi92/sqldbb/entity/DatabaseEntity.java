@@ -28,6 +28,7 @@ public class DatabaseEntity {
     private HashMap<String,Class> fieldTypes;
     private HashMap<String,Object> fieldValues;
     private HashMap<String,ForeignKeyEntity> references;
+    private HashMap<String,CollectionEntity> parentEntities;
 
     public DatabaseEntity() {
         
@@ -44,6 +45,7 @@ public class DatabaseEntity {
         fieldTypes = new HashMap<>();
         fieldValues = new HashMap<>();
         references = new HashMap<>();
+        parentEntities = new HashMap<>();
     }
 
     public Class getEntityClass() {
@@ -167,16 +169,34 @@ public class DatabaseEntity {
     public void setReferences(HashMap<String,ForeignKeyEntity> references) {
         this.references = references;
     }
+
+    public HashMap<String,CollectionEntity> getParentEntities() {
+        return parentEntities;
+    }
+
+    public void setParentEntities(HashMap<String,CollectionEntity> parentEntities) {
+        this.parentEntities = parentEntities;
+    }
+    
+    public void addParentEntity(String field, Class c, CollectionEntity pa) {
+        if(!allFields.contains(field)) {
+            allFields.add(field);
+        }
+        fieldTypes.put(field, c);
+        parentEntities.put(field, pa);
+    }
     
     public class ForeignKeyEntity {
         
         private String referencingTable;
         private String referencingColumn;
+        private boolean isCollectionItem;
         private DatabaseEntity dbe;
         
-        public ForeignKeyEntity(String referencingTable, String referencingColumn, DatabaseEntity dbe) {
+        public ForeignKeyEntity(String referencingTable, String referencingColumn, boolean isCollectionItem, DatabaseEntity dbe) {
             this.referencingTable = referencingTable;
             this.referencingColumn = referencingColumn;
+            this.isCollectionItem = isCollectionItem;
             this.dbe = dbe;
         }
 
@@ -195,6 +215,14 @@ public class DatabaseEntity {
         public void setReferencingColumn(String referencingColumn) {
             this.referencingColumn = referencingColumn;
         }
+        
+        public boolean isIsCollectionItem() {
+            return isCollectionItem;
+        }
+
+        public void setIsCollectionItem(boolean isCollectionItem) {
+            this.isCollectionItem = isCollectionItem;
+        }
 
         public DatabaseEntity getDbe() {
             return dbe;
@@ -203,32 +231,35 @@ public class DatabaseEntity {
         public void setDbe(DatabaseEntity dbe) {
             this.dbe = dbe;
         }
+    }
+    
+    public class CollectionEntity {
+        
+        private Class childEntityClass;
+        private String referencingField;
+
+        public CollectionEntity(Class childEntityClass, String referencingColumn) {
+            this.childEntityClass = childEntityClass;
+            this.referencingField = referencingColumn;
+        }
+
+        public Class getChildEntityClass() {
+            return childEntityClass;
+        }
+
+        public void setChildEntityClass(Class childEntityClass) {
+            this.childEntityClass = childEntityClass;
+        }
+
+        public String getReferencingField() {
+            return referencingField;
+        }
+
+        public void setReferencingField(String referencingField) {
+            this.referencingField = referencingField;
+        }
         
         
     }
-    
-//    public HashMap<String,Object> getColumns() {
-//        return columns;
-//    }
-//
-//    public void setColumns(HashMap<String,Object> columns) {
-//        this.columns = columns;
-//    }
-//    
-//    public void addColumn(String columnName, Object columnValue) {
-//        columns.put(columnName, columnValue);
-//    }
-//
-//    public HashMap<String,DatabaseEntity> getReferences() {
-//        return references;
-//    }
-//
-//    public void setReferences(HashMap<String,DatabaseEntity> references) {
-//        this.references = references;
-//    }
-//    
-//    public void addReference(String foreignKey, DatabaseEntity entity) {
-//        references.put(foreignKey, entity);
-//    }
 
 }

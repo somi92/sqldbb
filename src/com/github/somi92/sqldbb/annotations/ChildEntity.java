@@ -17,10 +17,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ForeignKey {
+public @interface ChildEntity {
     
     String column() default "";
-    String referencingTable() default "";
-    String referencingColumn() default "";
-    boolean isCollectionItem() default false;
+    Class parentEntityClass() default Object.class;
+    String parentCollectionField() default "";
 }

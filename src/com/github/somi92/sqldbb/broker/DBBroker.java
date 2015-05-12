@@ -23,8 +23,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -98,7 +96,7 @@ public class DBBroker {
         
     }
     
-    public <T> T loadEntity(T o) throws SQLException {
+    public <T> T loadEntity(T o, boolean loadCollections) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
         EntityProcessor.setEntityFieldValues(dbe, o);
         QueryBuilder qb = new QueryBuilder(new SelectQueryBuilder(true));
@@ -109,14 +107,14 @@ public class DBBroker {
         ResultSet rs = ps.executeQuery();
         T entity = null;
         while(rs.next()) {
-            entity = createTypeInstance(dbe, rs);
+            entity = createTypeInstance(dbe, rs, loadCollections);
         }
         rs.close();
         ps.close();
         return entity;
     }
     
-    public <T> List<T> loadEntities(T o, List<String> searchCriteria) throws SQLException {
+    public <T> List<T> loadEntities(T o, List<String> searchCriteria, boolean loadCollections) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
         QueryBuilder qb;
         if(searchCriteria != null) {
@@ -138,7 +136,7 @@ public class DBBroker {
         }
         List<T> entities = new ArrayList<>();
         while(rs.next()) {
-            T entity = createTypeInstance(dbe, rs);
+            T entity = createTypeInstance(dbe, rs, loadCollections);
             entities.add(entity);
         }
         return entities;
@@ -180,7 +178,7 @@ public class DBBroker {
         return rowsAffected;
     } 
     
-    private <T> T createTypeInstance(DatabaseEntity dbe, ResultSet rs) throws SQLException {
+    private <T> T createTypeInstance(DatabaseEntity dbe, ResultSet rs, boolean loadCollections) throws SQLException {
         try {
             T t = (T) dbe.getEntityClass().newInstance();
             List<String> fields = dbe.getAllFields();
@@ -193,10 +191,30 @@ public class DBBroker {
                 Method method = entityClass.getDeclaredMethod(methodName, new Class[] {fieldType});
                 
                 if(dbe.getForeignKeys().contains(dbe.getFieldColumnMapping().get(field))) {
-                    DatabaseEntity dbe2 = dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).getDbe();
-                    method.invoke(t, new Object[] {createTypeInstance(dbe2, rs)});
-                    continue;
+                    boolean isCollectionItem = dbe.getReferences().get(dbe.getFieldColumnMapping()
+                            .get(field)).isIsCollectionItem();
+                    if(!loadCollections || (loadCollections && !isCollectionItem)) {
+                        DatabaseEntity dbe2 = dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).getDbe();
+                        method.invoke(t, new Object[] {createTypeInstance(dbe2, rs, loadCollections)});
+                        continue;
+                    }
                 }
+                
+//                if((dbe.getForeignKeys().contains(dbe.getFieldColumnMapping().get(field)) && 
+//                        !dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).isIsCollectionItem()) 
+//                        
+//                        ||
+//                        
+//                        (dbe.getForeignKeys().contains(dbe.getFieldColumnMapping().get(field)) &&
+//                        !dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).isIsCollectionItem() &&
+//                        loadCollections)) {
+//                    
+//                    DatabaseEntity dbe2 = dbe.getReferences().get(dbe.getFieldColumnMapping().get(field)).getDbe();
+//                    method.invoke(t, new Object[] {createTypeInstance(dbe2, rs, loadCollections)});
+//                    continue;
+//                } else {
+//                    
+//                }
                 
                 switch(fieldType.getSimpleName()) {
                     case "int":
@@ -221,9 +239,26 @@ public class DBBroker {
                         method.invoke(t, new Object[] {rs.getDate(column)});
                         break;
                     default:
-                        method.invoke(t, new Object[] {rs.getInt(column)});
+//                        method.invoke(t, new Object[] {rs.getInt(column)});
+                }
+                
+                if(dbe.getParentEntities().containsKey(field) && loadCollections) {
+                    DatabaseEntity.CollectionEntity ce = dbe.getParentEntities().get(field);
+                    List<String> searchCriteria = new ArrayList<>();
+                    String referencingField = ce.getReferencingField();
+                    searchCriteria.add(referencingField);
+                    String setterName = "set"+(referencingField.charAt(0)+"").toUpperCase()+referencingField.substring(1);
+                    Object temp = ce.getChildEntityClass().newInstance();
+                    Method setterMethod = ce.getChildEntityClass().getDeclaredMethod(setterName, new Class[] {dbe.getEntityClass()});
+                    setterMethod.invoke(temp, new Object[] {t});
+                    List list = loadEntities(temp, searchCriteria, loadCollections);
+                    method.invoke(t, new Object[] {list});
+                    for(Object o : list) {
+//                        Method setterMethod = ce.getChildEntityClass().getDeclaredMethod(setterName, new Class[] {fieldType});
+                        setterMethod.invoke(o, new Object[] {t});
                     }
                 }
+            }
             
             return t;
         } catch (InstantiationException ex) {
