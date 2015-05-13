@@ -153,6 +153,25 @@ public class DBBroker {
         int rowsAffected = ps.executeUpdate();
         return rowsAffected;
     }
+    
+    public <T> int[] insertEntities(List<T> list) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(list.get(0).getClass());
+        QueryBuilder qb = new QueryBuilder(new InsertQueryBuilder());
+        qb.buildQuery(dbe);
+        Query query = qb.getQuery();
+        int[] returnValue = null;
+        PreparedStatement ps = connection.prepareStatement(query.toString());
+        for(int i=0; i<list.size(); i++) {
+            EntityProcessor.setEntityFieldValues(dbe, list.get(i));
+            qb.fillPreparedStatement(ps, dbe);
+            ps.addBatch();
+            if((i+1)%500 == 0) {
+                ps.executeBatch();
+            }
+        }
+        returnValue = ps.executeBatch();
+        return returnValue;
+    }
 
     public <T> int updateEntity(T o) throws SQLException {
         DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
@@ -217,6 +236,12 @@ public class DBBroker {
 //                }
                 
                 switch(fieldType.getSimpleName()) {
+                    case "byte":
+                        method.invoke(t, new Object[] {rs.getByte(column)});
+                        break;
+                    case "short":
+                        method.invoke(t, new Object[] {rs.getShort(column)});
+                        break;
                     case "int":
                         method.invoke(t, new Object[] {rs.getInt(column)});
                         break;
@@ -234,6 +259,9 @@ public class DBBroker {
                         break;
                     case "boolean":
                         method.invoke(t, new Object[] {rs.getBoolean(column)});
+                        break;
+                    case "char":
+                        method.invoke(t, new Object[] {rs.getString(column).charAt(0)});
                         break;
                     case "Date":
                         method.invoke(t, new Object[] {rs.getDate(column)});

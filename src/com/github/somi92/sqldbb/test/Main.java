@@ -17,7 +17,10 @@ import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
 import com.sun.corba.se.pept.broker.Broker;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -189,8 +192,10 @@ public class Main {
         
 //        testEntityProcessorAndQueryBuilders();
 //        testComplexKeys();
-        testEntityLoading();
-//        testCollections();
+//        testEntityLoading();
+        testCollections();
+//        testInsert();
+//        testTypes();
         
         broker.closeDatabaseConnection();
         
@@ -204,7 +209,7 @@ public class Main {
         
         ClassF f = new ClassF();
         
-        DatabaseEntity dbe1 = EntityProcessor.createEntity(f.getClass());
+        DatabaseEntity dbe1 = EntityProcessor.createEntity(a.getClass());
         EntityProcessor.printEntity(dbe1);
         
         System.out.println("===================================================="
@@ -315,16 +320,72 @@ public class Main {
         System.out.println(loaded);
     }
     
+    public static void testInsert() {
+        try {
+            ClassD d1 = new ClassD(41, null);
+            ClassD d2 = new ClassD(43, null);
+            ClassD d3 = new ClassD(45, null);
+            ClassB b1 = new ClassB(21, null, null);
+            ClassB b2 = new ClassB(23, null, null);
+            ClassA a1 = new ClassA(14, 114, "a4-b3-d5", b2, d3);
+            ClassA a2 = new ClassA(15, 115, "a5-b1-d3", b1, d2);
+            ClassA a3 = new ClassA(16, 116, "a6-b3-d1", b2, d1);
+            List<ClassA> list = new ArrayList<>();
+            list.add(a1);
+            list.add(a2);
+            list.add(a3);
+//            broker.insertEntities(list);
+            
+            ClassA a4 = new ClassA(17, 117, "a6-b3-d1", b2, d1);
+            broker.insertEntity(a4);
+            
+            broker.commitTransaction();
+            System.out.println("Inserting entities successful.");
+        } catch (SQLException ex) {
+            broker.rollbackTransaction();
+            System.out.println("Inserting entities - transaction rollback: "+ex.getMessage());
+        }
+    }
+    
     public static void testCollections() throws SQLException {
         ClassF f = new ClassF();
         f.setF1(51);
         ClassG g = new ClassG(null, 1, "s");
         List<String> search = new ArrayList<>();
         search.add("g2");
-        ClassF loadedF = broker.loadEntity(f, true);
+        ClassF loadedF = broker.loadEntity(f, false);
         System.out.println(loadedF);
 //        for(ClassF fe : loadedF) {
 //            System.out.println(fe);
 //        }
+    }
+    
+    public static void testTypes() {
+        try {
+            TypesTesting tt = new TypesTesting();
+            tt.setL(1000);
+//            byte b = 1;
+//            tt.setB(b);
+//            short s = 2;
+//            tt.setS(b);
+//            tt.setI(3);
+//            tt.setStr("String");
+//            tt.setF(4.4f);
+//            tt.setD(5.5d);
+//            tt.setBool(true);
+//            tt.setC('c');
+//            tt.setDate(new Date());
+            
+//            broker.insertEntity(tt);
+            
+            TypesTesting loaded = broker.loadEntity(tt, false);
+            System.out.println(loaded);
+            
+            broker.commitTransaction();
+            System.out.println("Types testing - OK!");
+        } catch (SQLException ex) {
+            broker.rollbackTransaction();
+            System.out.println("Types testing - Error: "+ex.getMessage());
+        }
     }
 }

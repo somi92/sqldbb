@@ -5,7 +5,6 @@
  */
 package com.github.somi92.sqldbb.test;
 
-import com.github.somi92.sqldbb.annotations.ChildEntity;
 import com.github.somi92.sqldbb.annotations.Column;
 import com.github.somi92.sqldbb.annotations.ForeignKey;
 import com.github.somi92.sqldbb.annotations.PrimaryKey;
