@@ -189,7 +189,8 @@ public class Main {
         
 //        testEntityProcessorAndQueryBuilders();
 //        testComplexKeys();
-        testCollections();
+        testEntityLoading();
+//        testCollections();
         
         broker.closeDatabaseConnection();
         
@@ -315,14 +316,15 @@ public class Main {
     }
     
     public static void testCollections() throws SQLException {
-//        ClassF f = new ClassF();
-//        f.setF1(51);
+        ClassF f = new ClassF();
+        f.setF1(51);
         ClassG g = new ClassG(null, 1, "s");
         List<String> search = new ArrayList<>();
         search.add("g2");
-        List<ClassG> loadedF = broker.loadEntities(g, search, true);
-        for(ClassG fe : loadedF) {
-            System.out.println(fe);
-        }
+        ClassF loadedF = broker.loadEntity(f, true);
+        System.out.println(loadedF);
+//        for(ClassF fe : loadedF) {
+//            System.out.println(fe);
+//        }
     }
 }
