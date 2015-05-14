@@ -196,6 +196,9 @@ public class Main {
 //        testInsert();
 //        testTypes();
         
+//        String s = broker.getMaxColumnValue(new ClassA(), "a1");
+//        System.out.println(s);
+        
         broker.closeDatabaseConnection();
         
     }

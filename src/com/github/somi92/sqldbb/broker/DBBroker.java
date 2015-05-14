@@ -145,6 +145,20 @@ public class DBBroker {
         stm.close();
         return counter;
     }
+    
+    public <T> String getMaxColumnValue(T o, String field) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        String query = "SELECT max("+dbe.getFieldColumnMapping().get(field)+") as max FROM "+dbe.getTableName()+";";
+        Statement stm = connection.createStatement();
+        ResultSet rs = stm.executeQuery(query);
+        String maxValue = null;
+        while(rs.next()) {
+            maxValue = rs.getObject("max", String.class);
+        }
+        rs.close();
+        stm.close();
+        return maxValue;
+    }
       
     public <T> int saveOrUpdateEntity(T o) throws SQLException {
         T t = loadEntity(o, false);
