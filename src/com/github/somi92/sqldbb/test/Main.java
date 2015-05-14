@@ -14,7 +14,6 @@ import com.github.somi92.sqldbb.query.builder.InsertQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.QueryBuilder;
 import com.github.somi92.sqldbb.query.builder.SelectQueryBuilder;
 import com.github.somi92.sqldbb.query.builder.UpdateQueryBuilder;
-import com.sun.corba.se.pept.broker.Broker;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -349,15 +348,15 @@ public class Main {
     
     public static void testCollections() throws SQLException {
         ClassF f = new ClassF();
-        f.setF1(51);
-        ClassG g = new ClassG(null, 1, "s");
+        f.setF2("F1");
+//        ClassG g = new ClassG(null, 1, "s");
         List<String> search = new ArrayList<>();
-        search.add("g2");
-        ClassF loadedF = broker.loadEntity(f, false);
-        System.out.println(loadedF);
-//        for(ClassF fe : loadedF) {
-//            System.out.println(fe);
-//        }
+        search.add("f2");
+        List<ClassF> loadedF = broker.loadEntities(f, search, true);
+//        System.out.println(loadedF);
+        for(ClassF fe : loadedF) {
+            System.out.println(fe);
+        }
     }
     
     public static void testTypes() {

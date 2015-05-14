@@ -32,11 +32,51 @@ public class DBBroker {
     
     private Connection connection;
     
-    private String databaseDriver = "com.mysql.jdbc.Driver";
-    private String hostPort = "localhost:3306";
-    private String database = "sqldbb-test";
-    private String username = "seecsk";
-    private String password = "seecsk@2015";
+    private static String databaseDriver = "com.mysql.jdbc.Driver";
+    private static String hostPort = "localhost:3306";
+    private static String database = "sqldbb-test";
+    private static String username = "seecsk";
+    private static String password = "seecsk@2015";
+    
+    public String getDatabaseDriver() {
+        return databaseDriver;
+    }
+
+    public void setDatabaseDriver(String databaseDriver) {
+        this.databaseDriver = databaseDriver;
+    }
+
+    public String getHostPort() {
+        return hostPort;
+    }
+
+    public void setHostPort(String hostPort) {
+        this.hostPort = hostPort;
+    }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
     
     private void loadDBDriver() throws ClassNotFoundException {
         Class.forName(databaseDriver);
@@ -91,9 +131,28 @@ public class DBBroker {
     }
     
     /* CRUD operations */
+    
+    public <T> long count(T o) throws SQLException {
+        DatabaseEntity dbe = EntityProcessor.createEntity(o.getClass());
+        String query = "SELECT count("+dbe.getPrimaryKeys().get(0)+") as counter FROM "+dbe.getTableName()+";";
+        Statement stm = connection.createStatement();
+        ResultSet rs = stm.executeQuery(query);
+        long counter = 0;
+        while(rs.next()) {
+            counter = rs.getLong("counter");
+        }
+        rs.close();
+        stm.close();
+        return counter;
+    }
       
-    public void saveOrUpdateEntity(Object o) {
-        
+    public <T> int saveOrUpdateEntity(T o) throws SQLException {
+        T t = loadEntity(o, false);
+        if(t == null) {
+            return insertEntity(o);
+        } else {
+            return updateEntity(o);
+        }
     }
     
     public <T> T loadEntity(T o, boolean loadCollections) throws SQLException {
@@ -125,20 +184,24 @@ public class DBBroker {
         qb.buildQuery(dbe);
         Query query = qb.getQuery();
         ResultSet rs;
+        Statement statement;
         if(searchCriteria != null) {
             PreparedStatement ps = connection.prepareStatement(query.toString());
             EntityProcessor.setEntityFieldValues(dbe, o);
             qb.fillPreparedStatement(ps, dbe);
             rs = ps.executeQuery();
+            statement = ps;
         } else {
-            Statement stm = connection.createStatement();
-            rs = stm.executeQuery(query.toString());
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query.toString());
         }
         List<T> entities = new ArrayList<>();
         while(rs.next()) {
             T entity = createTypeInstance(dbe, rs, loadCollections);
             entities.add(entity);
         }
+        rs.close();
+        statement.close();
         return entities;
     }
     
@@ -151,6 +214,7 @@ public class DBBroker {
         PreparedStatement ps = connection.prepareStatement(query.toString());
         qb.fillPreparedStatement(ps, dbe);
         int rowsAffected = ps.executeUpdate();
+        ps.close();
         return rowsAffected;
     }
     
@@ -170,6 +234,7 @@ public class DBBroker {
             }
         }
         returnValue = ps.executeBatch();
+        ps.close();
         return returnValue;
     }
 
@@ -182,6 +247,7 @@ public class DBBroker {
         PreparedStatement ps = connection.prepareStatement(query.toString());
         qb.fillPreparedStatement(ps, dbe);
         int rowsAffected = ps.executeUpdate();
+        ps.close();
         return rowsAffected;
     }
     
@@ -194,6 +260,7 @@ public class DBBroker {
         PreparedStatement ps = connection.prepareStatement(query.toString());
         qb.fillPreparedStatement(ps, dbe);
         int rowsAffected = ps.executeUpdate();
+        ps.close();
         return rowsAffected;
     } 
     
