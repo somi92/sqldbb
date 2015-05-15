@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -361,11 +362,11 @@ public class DBBroker {
                     Method setterMethod = ce.getChildEntityClass().getDeclaredMethod(setterName, new Class[] {dbe.getEntityClass()});
                     setterMethod.invoke(temp, new Object[] {t});
                     List list = loadEntities(temp, searchCriteria, loadCollections);
-                    method.invoke(t, new Object[] {list});
                     for(Object o : list) {
 //                        Method setterMethod = ce.getChildEntityClass().getDeclaredMethod(setterName, new Class[] {fieldType});
                         setterMethod.invoke(o, new Object[] {t});
                     }
+                    method.invoke(t, new Object[] {list});
                 }
             }
             

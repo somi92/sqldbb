@@ -355,7 +355,7 @@ public class Main {
 //        ClassG g = new ClassG(null, 1, "s");
         List<String> search = new ArrayList<>();
         search.add("f2");
-        List<ClassF> loadedF = broker.loadEntities(f, search, true);
+        List<ClassF> loadedF = broker.loadEntities(f, null, true);
 //        System.out.println(loadedF);
         for(ClassF fe : loadedF) {
             System.out.println(fe);
