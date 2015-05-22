@@ -74,11 +74,21 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
             String[] criteriaKeys = searchCriteria.
                     toArray(new String[searchCriteria.size()]);
             for(int i=0; i<criteriaKeys.length; i++) {
-                String column = dbe.getFieldColumnMapping().get(criteriaKeys[i]);
-                if(i==(criteriaKeys.length-1)) {
-                    condition += table+"."+column+"=?";
+                
+                if(criteriaKeys[i].contains("=")) {
+                    if(i==(criteriaKeys.length-1)) {
+                        condition += table+"."+criteriaKeys[i];
+                    } else {
+                        condition += table+"."+criteriaKeys[i]+" AND ";
+                    }
                 } else {
-                    condition += table+"."+column+"=? AND ";
+                    query.setUsePS(true);
+                    String column = dbe.getFieldColumnMapping().get(criteriaKeys[i]);
+                    if(i==(criteriaKeys.length-1)) {
+                        condition += table+"."+column+"=?";
+                    } else {
+                        condition += table+"."+column+"=? AND ";
+                    }
                 }
             }
         }
@@ -102,7 +112,7 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
             }
         }
         
-        if(searchCriteria != null) {
+        if(searchCriteria != null && query.isUsePS()) {
             String[] criteriaKeys = searchCriteria.
                     toArray(new String[searchCriteria.size()]);
             for(int i=0; i<criteriaKeys.length; i++) {

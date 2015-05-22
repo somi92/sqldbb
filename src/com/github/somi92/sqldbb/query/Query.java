@@ -15,12 +15,14 @@ public class Query {
 //    private String condition;
     private String format;
     private String query;
+    private boolean usePS;
     
     public Query() {
-        
+        usePS = false;
     }
     
     public Query(String[] keywords, String condition, String format) {
+        this();
         this.keywords = keywords;
 //        this.condition = condition;
         this.format = format;
@@ -59,8 +61,16 @@ public class Query {
         this.query = query;
     }
     
+    public boolean isUsePS() {
+        return usePS;
+    }
+
+    public void setUsePS(boolean usePS) {
+        this.usePS = usePS;
+    }
+    
     @Override
     public String toString() {
         return query;
-    }    
+    }
 }

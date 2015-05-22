@@ -201,11 +201,16 @@ public class DBBroker {
         ResultSet rs;
         Statement statement;
         if(searchCriteria != null) {
-            PreparedStatement ps = connection.prepareStatement(query.toString());
-            EntityProcessor.setEntityFieldValues(dbe, o);
-            qb.fillPreparedStatement(ps, dbe);
-            rs = ps.executeQuery();
-            statement = ps;
+            if(query.isUsePS()) {
+                PreparedStatement ps = connection.prepareStatement(query.toString());
+                EntityProcessor.setEntityFieldValues(dbe, o);
+                qb.fillPreparedStatement(ps, dbe);
+                rs = ps.executeQuery();
+                statement = ps;
+            } else {
+                statement = connection.createStatement();
+                rs = statement.executeQuery(query.toString());
+            }
         } else {
             statement = connection.createStatement();
             rs = statement.executeQuery(query.toString());
