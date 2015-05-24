@@ -9,6 +9,7 @@ import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
     public void formatQuery(DatabaseEntity dbe) {
         String table = dbe.getTableName();
         
-        String columnsForQuery = getColumnsForQuery(dbe);
+        String columnsForQuery = getColumnsForQuery(dbe, new ArrayList<>());
         
         List<String> primaryKeys = dbe.getPrimaryKeys();
         String condition = "";
@@ -97,7 +98,7 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
                 query.getKeywords()[0],
                 columnsForQuery,
                 query.getKeywords()[1],
-                table+getSourceForQuery(dbe),
+                table+getSourceForQuery(dbe, new ArrayList<>(), 0),
                 query.getKeywords()[2],
                 condition);
         query.setQuery(queryValue);
@@ -122,7 +123,7 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
         }
     }
     
-    private String getColumnsForQuery(DatabaseEntity dbe) {
+    private String getColumnsForQuery(DatabaseEntity dbe, List<String> processedFields) {
         String table = dbe.getTableName();
         List<String> columns = dbe.getAllColumns();
         List<String> foreingKeys = dbe.getForeignKeys();
@@ -143,21 +144,35 @@ public class SelectQueryBuilder extends AbstractQueryBuilder {
         for(String s : foreingKeys) {
             DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(s);
             DatabaseEntity foreignDbe = fke.getDbe();
-            columnsForQuery += ", "+getColumnsForQuery(foreignDbe);
+            if(!processedFields.contains(foreignDbe.getEntityClass().getName())) {
+                processedFields.add(foreignDbe.getEntityClass().getName());
+                columnsForQuery += ", "+getColumnsForQuery(foreignDbe, processedFields);
+            }
         }
         return columnsForQuery;
     }
     
-    private String getSourceForQuery(DatabaseEntity dbe) {
+    private String getSourceForQuery(DatabaseEntity dbe, List<String> processedJoins, int i) {
         String dataSource = "";
         List<String> foreignKeys = dbe.getForeignKeys();
         for(String s : foreignKeys) {
             DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(s);
             String referencingTable = fke.getReferencingTable();
             String referencingColumn = fke.getReferencingColumn();
-            String join = " JOIN "+referencingTable+" ON ("+
+            
+            if(!processedJoins.contains(referencingTable)) {
+                processedJoins.add(referencingTable);
+                String join = " JOIN "+referencingTable+" ON ("+
                     dbe.getTableName()+"."+s+"="+referencingTable+"."+referencingColumn+")";
-            dataSource += join + getSourceForQuery(fke.getDbe());
+                dataSource += join + getSourceForQuery(fke.getDbe(), processedJoins, i);
+            } else {
+//                processedJoins.add(referencingTable);
+//                String join = " JOIN "+referencingTable+" "+referencingTable+(++i)+" ON ("+
+//                    dbe.getTableName()+"."+s+"="+referencingTable+"."+referencingColumn+")";
+//                dataSource += join + getSourceForQuery(fke.getDbe(), processedJoins, i);
+            }
+            
+            
         }
         return dataSource;
     }
