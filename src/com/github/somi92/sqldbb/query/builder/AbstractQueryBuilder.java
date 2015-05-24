@@ -8,9 +8,9 @@ package com.github.somi92.sqldbb.query.builder;
 import com.github.somi92.sqldbb.entity.DatabaseEntity;
 import com.github.somi92.sqldbb.entity.processor.EntityProcessor;
 import com.github.somi92.sqldbb.query.Query;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  *
@@ -55,8 +55,8 @@ public abstract class AbstractQueryBuilder {
                 ps.setString(i+1, (String) (fieldValue.toString().charAt(0)+""));
                 break;
             case "Date":
-                java.util.Date d = (java.util.Date) fieldValue;
-                ps.setDate(i+1, new Date(d.getTime()));
+                Timestamp t = (Timestamp) fieldValue;
+                ps.setTimestamp(i+1, t);
                 break;
             default: {
                 DatabaseEntity.ForeignKeyEntity fke = dbe.getReferences().get(column);

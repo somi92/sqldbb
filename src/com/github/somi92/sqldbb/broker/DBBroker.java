@@ -357,7 +357,7 @@ public class DBBroker {
                         method.invoke(t, new Object[] {rs.getString(column).charAt(0)});
                         break;
                     case "Date":
-                        method.invoke(t, new Object[] {rs.getDate(column)});
+                        method.invoke(t, new Object[] {rs.getTimestamp(column)});
                         break;
                     default:
 //                        method.invoke(t, new Object[] {rs.getInt(column)});
