@@ -11,6 +11,7 @@ import com.github.somi92.sqldbb.query.Query;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
@@ -55,7 +56,8 @@ public abstract class AbstractQueryBuilder {
                 ps.setString(i+1, (String) (fieldValue.toString().charAt(0)+""));
                 break;
             case "Date":
-                Timestamp t = (Timestamp) fieldValue;
+                Date d = (Date) fieldValue;
+                Timestamp t = new Timestamp(d.getTime());
                 ps.setTimestamp(i+1, t);
                 break;
             default: {
