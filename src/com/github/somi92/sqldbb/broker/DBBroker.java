@@ -33,16 +33,25 @@ public class DBBroker {
     
     private Connection connection;
     
+    private static String databaseServer = "mysql";
     private static String databaseDriver = "com.mysql.jdbc.Driver";
     private static String hostPort = "localhost:3306";
     private static String database = "sqldbb-test";
     private static String username = "seecsk";
     private static String password = "seecsk@2015";
     
+    public String getDatabaseServer() {
+        return databaseServer;
+    }
+
+    public void setDatabaseServer(String databaseServer) {
+        this.databaseServer = databaseServer;
+    }
+    
     public String getDatabaseDriver() {
         return databaseDriver;
     }
-
+    
     public void setDatabaseDriver(String databaseDriver) {
         this.databaseDriver = databaseDriver;
     }
@@ -83,26 +92,33 @@ public class DBBroker {
         Class.forName(databaseDriver);
     }
     
-    public void openDatabaseConnection() {
+    public void openDatabaseConnection() throws Exception {
         try {
             loadDBDriver();
+//            connection = DriverManager.
+//                    getConnection("jdbc:mysql://"+hostPort+"/"+database+"?useUnicode=yes&characterEncoding=UTF-8", username, password);
+            
             connection = DriverManager.
-                    getConnection("jdbc:mysql://"+hostPort+"/"+database+"?useUnicode=yes&characterEncoding=UTF-8", username, password);
+                    getConnection(constructURL(), username, password);
+            
             System.out.println("Connected to database: "+hostPort+"/"+database);
             connection.setAutoCommit(false);
         } catch (ClassNotFoundException ex) {
             System.out.println("Error loading driver: "+ex.getMessage());
+            throw new RuntimeException("Error loading driver: "+ex.getMessage());
         } catch (SQLException ex) {
             System.out.println("Error opening database: "+ex.getMessage());
+            throw new Exception("Error opening database: "+ex.getMessage());
         }
     }
     
-    public void closeDatabaseConnection() {
+    public void closeDatabaseConnection() throws Exception {
         try {
             connection.close();
             System.out.println("Disconnected from database: "+hostPort+"/"+database);
         } catch (SQLException ex) {
             System.out.println("Error closing database: "+ex.getMessage());
+            throw new Exception("Error closing database: "+ex.getMessage());
         }
     }
     
@@ -120,6 +136,23 @@ public class DBBroker {
         } catch (SQLException ex) {
             System.out.println("Error on transaction rollback: "+ex.getMessage());
         }
+    }
+    
+    private String constructURL() {
+        String url = "";
+        if(databaseServer.equals("mysql")) {
+            url = "jdbc:mysql://"+hostPort+"/"+database+"?useUnicode=yes&characterEncoding=UTF-8";
+        }
+        if(databaseServer.equals("access")) {
+            url = "jdbc:odbc:"+database;
+        }
+        if(databaseServer.equals("sqlserver")) {
+            url = "jdbc:sqlserver://"+hostPort+";databaseName="+database;
+        }
+        if(databaseServer.equals("oracle")) {
+            url = "jdbc:oracle:thin:@"+hostPort+":"+database;
+        }
+        return url;
     }
     
     /* Utility methods */

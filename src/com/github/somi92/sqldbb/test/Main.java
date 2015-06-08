@@ -29,7 +29,7 @@ public class Main {
     
     private static DBBroker broker;
     
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, Exception {
         /*
 //        DBBroker broker = new DB?Broker();
         ClassD d = new ClassD(41, "d1");
